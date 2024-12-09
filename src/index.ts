@@ -8,9 +8,14 @@ import getNormals from 'polyline-normals'
 
 const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 
-const timeDisplay = <HTMLSpanElement> document.getElementById('time');
+//const timeDisplay = <HTMLSpanElement> document.getElementById('time');
 const audioElement = <HTMLAudioElement> document.getElementById('audio');
 const audioProcessor = new AudioProcessor(audioElement);
+
+canvas.addEventListener('click', () => {
+    audioProcessor.toggle();
+});
+
 const thicknessSlider = <HTMLInputElement> document.getElementById('thickness-slider');
 
 const orthoCheckbox = <HTMLInputElement> document.getElementById('ortho-checkbox');
@@ -285,8 +290,8 @@ async function init() {
     function render(now:number) {
         const aspect = gl.canvas.width / gl.canvas.height;
         // Update the time display
-        const currentTime = Date.now();
-        timeDisplay.textContent = ((currentTime - startTime)/1000).toFixed(2).toString();
+        //const currentTime = Date.now();
+        //timeDisplay.textContent = ((currentTime - startTime)/1000).toFixed(2).toString();
         //now *= 0.001;
 
         // Get the frequency data from the audio processor and store it in the frequencyData array

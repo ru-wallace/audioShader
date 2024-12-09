@@ -26,33 +26,34 @@
             <div id="canvas-container">
                 <canvas id="canvas" width="500" height="500">
                 </canvas>
+                <div id="canvas-overlay">
+                    <audio src="audio2.mp3" id="audio" controls></audio>
+                </div>
             </div>
             <div id="controls">
-                <audio src="audio2.mp3" id="audio" controls></audio>
-                <div class="info">
-                    <span id="time-label" class="label">Time: </span>
-                    <span id="time" class="value">0.0</span>
+                
+                <div class="section">
+                    <div class="info">
+                        <span id="thickness-label" class="label">Line thickness: </span>
+                        <span id="thickness" class="value">0.01</span>
+                        <div class="control">
+                            <input type="range" id="thickness-slider" min="0.01" max="0.3" value="0.01" step="0.01">
+                        </div>
+                    </div>
+                    <div class="info">
+                        <span id="ortho" class="label">Orthographic: </span>
+                        <input type="checkbox" id="ortho-checkbox" checked>
+                    </div>
+                    <div class="info">
+                        <span id="polar" class="label">Circle: </span>
+                        <input type="checkbox" id="polar-checkbox" checked>
+                    </div>
                 </div>
-                <div class="info">
-                    <span id="thickness-label" class="label">Line thickness: </span>
-                    <span id="thickness" class="value">0.01</span>
-                </div>
-                <div class="info">
-                    <span id="ortho" class="label">Orthographic: </span>
-                    <input type="checkbox" id="ortho-checkbox" checked>
-                </div>
-                <div class="info">
-                    <span id="polar" class="label">Circle: </span>
-                    <input type="checkbox" id="polar-checkbox" checked>
-                </div>
-                <div class="control">
-                    <input type="range" id="thickness-slider" min="0.01" max="0.3" value="0.01" step="0.01">
-                </div>
-
                 <div class="slider-group" id="view-slider-group">
+                    <span class="group-name">View</span>
                     <div class="slider">
                         <div class="info">
-                            <span id="viewX-label" class="label">View X: </span>
+                            <span id="viewX-label" class="label">X: </span>
                             <span id="viewX" class="value">0.0</span>
                         </div>
                         <div class="control">
@@ -61,7 +62,7 @@
                     </div>
                     <div class="slider">
                         <div class="info">
-                            <span id="viewY-label" class="label">View Y: </span>
+                            <span id="viewY-label" class="label">Y: </span>
                             <span id="viewY" class="value">0.0</span>
                         </div>
                         <div class="control">
@@ -70,7 +71,7 @@
                     </div>
                     <div class="slider">
                         <div class="info">
-                            <span id="viewZ-label" class="label">View Z: </span>
+                            <span id="viewZ-label" class="label">Z: </span>
                             <span id="viewZ" class="value">0.0</span>
                         </div>
                         <div class="control">
@@ -80,9 +81,10 @@
                 </div>
 
                 <div class="slider-group" id="rotate-slider-group">
+                    <span class="group-name">Rotate</span>
                     <div class="slider">
                         <div class="info">
-                            <span id="rotateX-label" class="label">Rotate X: </span>
+                            <span id="rotateX-label" class="label">X: </span>
                             <span id="rotateX" class="value">0.0</span>
                         </div>
                         <div class="control">
@@ -91,7 +93,7 @@
                     </div>
                     <div class="slider">
                         <div class="info">
-                            <span id="rotateY-label" class="label">Rotate Y: </span>
+                            <span id="rotateY-label" class="label">Y: </span>
                             <span id="rotateY" class="value">-0.5</span>
                         </div>
                         <div class="control">
@@ -100,7 +102,7 @@
                     </div>
                     <div class="slider">
                         <div class="info">
-                            <span id="rotateZ-label" class="label">Rotate Z: </span>
+                            <span id="rotateZ-label" class="label">Z: </span>
                             <span id="rotateZ" class="value">0.0</span>
                         </div>
                         <div class="control">
