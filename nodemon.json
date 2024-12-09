@@ -9,7 +9,7 @@
     ],
     "verbose": false,
     "execMap": {
-      "ts": "npx tsc && vite serve ./www --host --port 3000 "
+      "ts": "npx tsc && vite serve ./www --config vite.config.js"
     },
     "events": {
       "restart": "echo 'App restarted due to:\n'$FILENAME'\" with title \"nodemon\"'"
