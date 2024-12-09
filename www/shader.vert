@@ -32,9 +32,11 @@ void main() {
     if (polar == 0.0) {
     p = a_position.xy + vec2(a_normal * u_thickness/2.0 * a_miter);
     }
-    vec4 pos = u_projectionMatrix  * u_viewMatrix * u_modelMatrix * vec4(p.x, p.y, 0.0, 1.0);
 
-    v_pos = a_position.xy;
+    v_pos = vec2((a_position.x+1.0)/2.0, (a_position.y+1.0)/2.0);
+    vec4 pos = u_projectionMatrix  * u_viewMatrix * u_modelMatrix * vec4(p.x, p.y, 0.5+ 0.8*v_pos.y, 1.0);
+
+    
     //gl_Position = vec4(a_position.x, a_position.y, 0,0);
     gl_Position = pos;//u_projectionMatrix * u_modelMatrix * u_viewMatrix * vec4(p, 1.0, 1.0);
     gl_PointSize = 1.0;
