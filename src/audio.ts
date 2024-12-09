@@ -3,8 +3,6 @@ class AudioProcessor {
     private audioContext: AudioContext;
     private analyser: AnalyserNode;
     private track: MediaElementAudioSourceNode;
-    private frequencyData: Uint8Array;
-    private timeDomainData: Uint8Array;
     private bufferLength: number;
 
 
@@ -23,8 +21,6 @@ class AudioProcessor {
         this.analyser.connect(this.audioContext.destination);
         this.analyser.fftSize = 2048;
         this.bufferLength = this.analyser.frequencyBinCount;
-        this.frequencyData = new Uint8Array(this.bufferLength);
-        this.timeDomainData = new Uint8Array(this.bufferLength);
     }
 
     getBufferLength() {
@@ -34,9 +30,9 @@ class AudioProcessor {
     getFrequencyData(buffer: Uint8Array) {
         this.analyser.getByteFrequencyData(buffer);
     }
-    getTimeDomainData() {
-        this.analyser.getByteTimeDomainData(this.timeDomainData);
-        return this.timeDomainData;
+    getTimeDomainData(buffer: Uint8Array) {
+        this.analyser.getByteTimeDomainData(buffer);
+        
     }
 
     play() {

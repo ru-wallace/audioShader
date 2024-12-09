@@ -245,11 +245,23 @@ async function init() {
             programInfo.uniforms.view.value = identityMatrixArray
             programInfo.uniforms.model.value = identityMatrixArray
             programInfo.uniforms.projection.value = identityMatrixArray;
+            viewXSlider.disabled = true;
+            viewYSlider.disabled = true;
+            viewZSlider.disabled = true;
+            rotateXSlider.disabled = true;
+            rotateYSlider.disabled = true;
+            rotateZSlider.disabled = true;
         } else {
             glMatrix.mat4.perspective(projectionMatrix, Math.PI/4, gl.canvas.width/gl.canvas.height, 0, 100);
             programInfo.uniforms.view.value = new Float32Array(translatedViewMatrix);
             programInfo.uniforms.model.value = new Float32Array(rotatedRotationMatrix);
             programInfo.uniforms.projection.value = new Float32Array(projectionMatrix);
+            viewXSlider.disabled = false;
+            viewYSlider.disabled = false;
+            viewZSlider.disabled = false;
+            rotateXSlider.disabled = false;
+            rotateYSlider.disabled = false;
+            rotateZSlider.disabled = false;
         }
         
     }
@@ -298,6 +310,7 @@ async function init() {
 
         // Get the frequency data from the audio processor and store it in the frequencyData array
         audioProcessor.getFrequencyData(frequencyData);
+        //audioProcessor.getTimeDomainData(frequencyData);
 
         // Turn the frequency data into an array of points
          const path: [number, number][] = Array.from(frequencyData).map((y, x) => 
