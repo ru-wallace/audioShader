@@ -12,8 +12,10 @@ const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 const audioElement = <HTMLAudioElement> document.getElementById('audio');
 const audioProcessor = new AudioProcessor(audioElement);
 
-canvas.addEventListener('click', () => {
-    audioProcessor.toggle();
+canvas.addEventListener('click', (e) => {
+    if (e.target === canvas) {
+        audioProcessor.toggle();
+    } 
 });
 
 const thicknessSlider = <HTMLInputElement> document.getElementById('thickness-slider');
