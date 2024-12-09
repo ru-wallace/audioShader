@@ -1,5 +1,5 @@
 import { buildProgram } from './buildProgram.js';
-import { resizeCanvasToDisplaySize, programInfo_t, verifyProgramInfo, bufferInfo_t, duplicateMiters, duplicateNormals, createIndices } from './utils.js';
+import { resizeCanvasToDisplaySize, programInfo_t, verifyProgramInfo, bufferInfo_t, duplicateMiters, duplicateNormals, createIndices, uniformValues_t } from './utils.js';
 import { initBuffers, updateElementBuffer, updatePositionBuffer } from './init-buffers.js';
 import * as glMatrix from 'gl-matrix';
 import { drawScene, setUniforms } from './draw-scene.js';
@@ -14,6 +14,7 @@ const audioProcessor = new AudioProcessor(audioElement);
 const thicknessSlider = <HTMLInputElement> document.getElementById('thickness-slider');
 
 const orthoCheckbox = <HTMLInputElement> document.getElementById('ortho-checkbox');
+const polarCheckbox = <HTMLInputElement> document.getElementById('polar-checkbox');
 
 const viewXSlider = <HTMLInputElement> document.getElementById('viewX-slider');
 const viewYSlider = <HTMLInputElement> document.getElementById('viewY-slider');
@@ -54,7 +55,7 @@ async function init() {
     if (!program) {
         throw new Error('Error creating program');
     }
-
+    gl.useProgram(program);
     // Holds the program and the locations of the attributes and uniforms
     const programInfo: programInfo_t = {
         program: program,
@@ -63,17 +64,20 @@ async function init() {
             normal: gl.getAttribLocation(program, 'a_normal'),
             miter: gl.getAttribLocation(program, 'a_miter')
         },
-        uniformLocations: {
-            thickness: gl.getUniformLocation(program, 'u_thickness'),
-            projection: gl.getUniformLocation(program, 'u_projectionMatrix'),
-            view: gl.getUniformLocation(program, 'u_viewMatrix'),
-            model: gl.getUniformLocation(program, 'u_modelMatrix')
+        uniforms: {
+            thickness: {location: gl.getUniformLocation(program, 'u_thickness'), type: 'float', value: null},
+            polar: {location: gl.getUniformLocation(program, 'u_polar'), type: 'float', value: null},
+            aspect: {location: gl.getUniformLocation(program, 'u_aspect'), type: 'float', value: null},
+            projection: {location: gl.getUniformLocation(program, 'u_projectionMatrix'), type: 'mat4', value: null},
+            view: {location: gl.getUniformLocation(program, 'u_viewMatrix'), type: 'mat4', value: null},
+            model: {location: gl.getUniformLocation(program, 'u_modelMatrix'), type: 'mat4', value: null}
         },
 
 
     };
 
-
+    console.log(programInfo.attribLocations);
+    console.log(programInfo.uniforms);
     // Verify that the program and the locations of the attributes and uniforms are 
     //      valid. (Mostly just for typescript to know that they are not null and we have 
     //      the right uniform / attr names
@@ -160,12 +164,17 @@ async function init() {
     var lineThickness = parseFloat(thicknessSlider.value);
 
     // Store the uniforms in an object so that they can be passed to the shader
-    const uniforms = {
-        projection: projectionMatrix32,
-        view: viewMatrix32,
-        model: rotationMatrix32,
-        thickness: lineThickness
-    };
+
+    programInfo.uniforms.projection.value = projectionMatrix32;
+    programInfo.uniforms.view.value = viewMatrix32;
+    programInfo.uniforms.model.value = rotationMatrix32;
+    programInfo.uniforms.thickness.value = lineThickness;
+    programInfo.uniforms.polar.value = polarCheckbox.checked ? 1 : 0;
+    programInfo.uniforms.aspect.value = gl.canvas.width/gl.canvas.height;
+
+
+
+
 
     // Set the rotation matrix (If ortho is checked, disable rotation)
     function rotate() {
@@ -185,7 +194,7 @@ async function init() {
         glMatrix.mat4.rotateX(rotatedRotationMatrix, rotationMatrix, rotateValues.x);
         glMatrix.mat4.rotateY(rotatedRotationMatrix, rotatedRotationMatrix, rotateValues.y);
         glMatrix.mat4.rotateZ(rotatedRotationMatrix, rotatedRotationMatrix, rotateValues.z);
-        uniforms.model = new Float32Array(rotatedRotationMatrix);
+        programInfo.uniforms.model.value = new Float32Array(rotatedRotationMatrix);
     }
 
     rotateXSlider.addEventListener('input', rotate);
@@ -212,7 +221,7 @@ async function init() {
         document.getElementById('viewZ')!.textContent = viewValues.z.toString();
 
         glMatrix.mat4.translate(translatedViewMatrix, viewMatrix, [viewValues.x, viewValues.y, viewValues.z]);
-        uniforms.view = new Float32Array(translatedViewMatrix);
+        programInfo.uniforms.view.value = new Float32Array(translatedViewMatrix);
     }
 
     viewXSlider.addEventListener('input', view);
@@ -226,14 +235,14 @@ async function init() {
         if (ortho) {
             //glMatrix.mat4.ortho(projectionMatrix, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, 0, 0, 1);
             let identityMatrixArray = new Float32Array(identityMatrix);
-            uniforms.view = identityMatrixArray
-            uniforms.model = identityMatrixArray
-            uniforms.projection = identityMatrixArray;
+            programInfo.uniforms.view.value = identityMatrixArray
+            programInfo.uniforms.model.value = identityMatrixArray
+            programInfo.uniforms.projection.value = identityMatrixArray;
         } else {
             glMatrix.mat4.perspective(projectionMatrix, Math.PI/4, gl.canvas.width/gl.canvas.height, 0, 100);
-            uniforms.view = new Float32Array(translatedViewMatrix);
-            uniforms.model = new Float32Array(rotatedRotationMatrix);
-            uniforms.projection = new Float32Array(projectionMatrix);
+            programInfo.uniforms.view.value = new Float32Array(translatedViewMatrix);
+            programInfo.uniforms.model.value = new Float32Array(rotatedRotationMatrix);
+            programInfo.uniforms.projection.value = new Float32Array(projectionMatrix);
         }
         
     }
@@ -252,11 +261,17 @@ async function init() {
    
     // Add event listener for slider controlling line thickness
     thicknessSlider.addEventListener('input', (e) => {
-        if (!programInfo.uniformLocations || programInfo.uniformLocations?.thickness === null) {
-            throw new Error('Could not get uniform location for thickness');
-        }
-        uniforms.thickness = parseFloat(thicknessSlider.value);
-        document.getElementById('thickness')!.textContent = uniforms.thickness.toString();
+
+        
+        programInfo.uniforms.thickness.value = thicknessSlider.valueAsNumber;
+        document.getElementById('thickness')!.textContent = programInfo.uniforms.thickness.value.toString();
+    });
+
+
+    // Add event listener for polar checkbox
+    polarCheckbox.addEventListener('change', (e) => {
+        
+        programInfo.uniforms.polar.value = polarCheckbox.checked ? 1 : 0;
     });
 
 
@@ -267,7 +282,7 @@ async function init() {
 
 
     function render(now:number) {
-
+        const aspect = gl.canvas.width / gl.canvas.height;
         // Update the time display
         const currentTime = Date.now();
         timeDisplay.textContent = ((currentTime - startTime)/1000).toFixed(2).toString();
@@ -277,8 +292,18 @@ async function init() {
         audioProcessor.getFrequencyData(frequencyData);
 
         // Turn the frequency data into an array of points
-        const path: [number, number][] = Array.from(frequencyData).map((y, x) => 
-            [2*x/frequencyData.length - 1, 1.8*y/255 - 0.9]);
+         const path: [number, number][] = Array.from(frequencyData).map((y, x) => 
+             [2*x/frequencyData.length - 1, 1.8*y/255 - 0.9]);
+
+        //turn into polar coordinates
+        // const path = Array.from(frequencyData).map((y, x) =>
+        // {
+        //     let r = y/255 + 0.2*(1-x/frequencyData.length);
+        //     let theta = 8*Math.PI*x/frequencyData.length + Math.PI/2;
+        //     return [r*Math.cos(theta), r*Math.sin(theta) * aspect];
+        // });
+
+
 
         if (html5Context) { // If we're using the 2d canvas for testing, draw the path there
             html5Context.clearRect(0, 0, html5Canvas.width, html5Canvas.height);
@@ -329,7 +354,7 @@ async function init() {
         //Position buffer is updated with the vertex data
         updatePositionBuffer(gl, bufferInfo.position, vertexData);
 
-        drawScene(gl, programInfo, bufferInfo, frequencyData.length, uniforms);
+        drawScene(gl, programInfo, bufferInfo, frequencyData.length);
         requestAnimationFrame(render);
         
     }

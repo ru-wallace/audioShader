@@ -3,8 +3,8 @@ type programInfo_t = {
     attribLocations?: {
         [key: string]: GLint;
     };
-    uniformLocations?: {
-        [key: string]: WebGLUniformLocation|null;
+    uniforms: {
+        [key: string]: {location: WebGLUniformLocation|null, type: string, value: any};
     };
     vertexArrayObject?: WebGLVertexArrayObject;
 };
@@ -13,6 +13,10 @@ type bufferInfo_t = {
     position: WebGLBuffer;
     element: WebGLBuffer;
     color?: WebGLBuffer;
+};
+
+type uniformValues_t = {
+    [key: string]: any;
 };
 
 function verifyProgramInfo(programInfo: programInfo_t): void {
@@ -26,15 +30,7 @@ function verifyProgramInfo(programInfo: programInfo_t): void {
             }
         });
     }
-    if (programInfo.uniformLocations) {
-        Object.keys(programInfo.uniformLocations).forEach((key) => {
-            if (programInfo.uniformLocations) {
-                if (!programInfo.uniformLocations[key]) {
-                    throw new Error(`Could not get uniform location for ${key}`);
-                }
-            }
-        });
-    }
+
     if (programInfo.vertexArrayObject !== undefined) {
         if (!programInfo.vertexArrayObject) {
             throw new Error('Could not create vertex array object');
@@ -104,4 +100,4 @@ function createIndices(length:number) {
     return indices
   }
 
-export { resizeCanvasToDisplaySize, programInfo_t, verifyProgramInfo, bufferInfo_t, duplicateMiters, duplicateNormals, createIndices };
+export { resizeCanvasToDisplaySize, programInfo_t, verifyProgramInfo, bufferInfo_t, duplicateMiters, duplicateNormals, createIndices, uniformValues_t };

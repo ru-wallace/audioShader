@@ -1,6 +1,6 @@
 import {bufferInfo_t, programInfo_t, verifyProgramInfo} from './utils';
 
-function drawScene(gl:WebGL2RenderingContext, programInfo:programInfo_t, buffers: bufferInfo_t, nVertices:number, uniforms:{thickness:number, projection:Float32Array, view:Float32Array, model:Float32Array}) {
+function drawScene(gl:WebGL2RenderingContext, programInfo:programInfo_t, buffers: bufferInfo_t, nVertices:number) {
 
     
 
@@ -8,12 +8,6 @@ function drawScene(gl:WebGL2RenderingContext, programInfo:programInfo_t, buffers
    
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    //set thickness uniform
-    if (!programInfo.uniformLocations || programInfo.uniformLocations?.thickness === null) {
-        throw new Error('Could not get uniform location for thickness');
-    }
-
-    
    
   
     // Tell WebGL how to pull out the positions from the position
@@ -29,8 +23,7 @@ function drawScene(gl:WebGL2RenderingContext, programInfo:programInfo_t, buffers
     gl.disable(gl.CULL_FACE)
     gl.enable(gl.BLEND)
     
-    setUniforms(gl, programInfo, uniforms.thickness, uniforms.projection, uniforms.view, uniforms.model);
-
+    setUniforms(gl, programInfo);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     {
@@ -94,28 +87,26 @@ function drawScene(gl:WebGL2RenderingContext, programInfo:programInfo_t, buffers
       gl.enableVertexAttribArray(programInfo.attribLocations.miter);
   }
 
-  function setUniforms(gl:WebGL2RenderingContext, programInfo:programInfo_t, thickness:number, projectionMatrix:Float32Array, viewMatrix:Float32Array, modelMatrix:Float32Array) {
-    if (!programInfo.uniformLocations || programInfo.uniformLocations?.projection === null || programInfo.uniformLocations?.view === null || programInfo.uniformLocations?.model === null) {
-        throw new Error('Could not get uniform locations');
+  function setUniforms(gl:WebGL2RenderingContext, programInfo:programInfo_t) {
+    
+    for (const key in programInfo.uniforms) {
+        if (programInfo.uniforms[key].location === null) {
+            throw new Error(`Could not get uniform location for ${key}`);
+        }
+
+        const value = programInfo.uniforms[key].value;
+        const type = programInfo.uniforms[key].type;
+
+        if (type === 'float') {
+            gl.uniform1f(programInfo.uniforms[key].location, value);
+        } else if (type === 'vec2') {
+            gl.uniform2fv(programInfo.uniforms[key].location, value);
+        } else if (type === 'mat4') {
+            gl.uniformMatrix4fv(programInfo.uniforms[key].location, false, value);
+        }
     }
 
-    gl.uniform1f(programInfo.uniformLocations.thickness,thickness);
 
-    gl.uniformMatrix4fv(
-        programInfo.uniformLocations.projection,
-        false,
-        projectionMatrix
-    );
-    gl.uniformMatrix4fv(
-        programInfo.uniformLocations.view,
-        false,
-        viewMatrix
-    );
-    gl.uniformMatrix4fv(
-        programInfo.uniformLocations.model,
-        false,
-        modelMatrix
-    );
   }
 
 
