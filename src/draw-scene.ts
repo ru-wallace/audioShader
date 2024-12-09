@@ -18,10 +18,12 @@ function drawScene(gl:WebGL2RenderingContext, programInfo:programInfo_t, buffers
   
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
-    setAttributes(gl, buffers, programInfo, nVertices);
+
   
     // Tell WebGL to use our program when drawing
     gl.useProgram(programInfo.program);
+
+    setAttributes(gl, buffers, programInfo, nVertices);
 
     gl.disable(gl.DEPTH_TEST)
     gl.disable(gl.CULL_FACE)

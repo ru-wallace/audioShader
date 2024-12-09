@@ -55,6 +55,8 @@ function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement|OffscreenCanvas) {
                            canvas.height !== displayHeight;
        
         if (needResize) {
+            console.log('resizing canvas');
+            console.log(`displayWidth: ${displayWidth}, displayHeight: ${displayHeight}`);
           // Make the canvas the same size
           canvas.width  = displayWidth;
           canvas.height = displayHeight;

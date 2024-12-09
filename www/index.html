@@ -19,6 +19,10 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
         <div id="content">
+            <!-- <div id="html5-canvas-container">
+                <canvas id="html5-canvas" width="500" height="500">
+                </canvas>
+            </div> -->
             <div id="canvas-container">
                 <canvas id="canvas" width="500" height="500">
                 </canvas>
@@ -35,10 +39,10 @@
                 </div>
                 <div class="info">
                     <span id="ortho" class="label">Orthographic: </span>
-                    <input type="checkbox" id="ortho-checkbox">
+                    <input type="checkbox" id="ortho-checkbox" checked>
                 </div>
                 <div class="control">
-                    <input type="range" id="thickness-slider" min="0.05" max="1" value="0.1" step="0.01">
+                    <input type="range" id="thickness-slider" min="0.01" max="0.3" value="0.05" step="0.01">
                 </div>
 
                 <div class="slider-group" id="view-slider-group">
