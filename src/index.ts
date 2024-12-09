@@ -262,10 +262,11 @@ async function init() {
     // Add event listener for slider controlling line thickness
     thicknessSlider.addEventListener('input', (e) => {
 
-        
         programInfo.uniforms.thickness.value = thicknessSlider.valueAsNumber;
         document.getElementById('thickness')!.textContent = programInfo.uniforms.thickness.value.toString();
     });
+
+    thicknessSlider.dispatchEvent(new Event('input'));
 
 
     // Add event listener for polar checkbox
