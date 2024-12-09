@@ -43,13 +43,13 @@ uploadButton.addEventListener('click', (e) =>{
 
 
 beethovenButton.addEventListener('click', (e) => {
-    audioSourceElement.src="beethoven5.mp3";
+    audioSourceElement.src="/beethoven5.mp3";
     goToMainView()
 
 });
 
 amenButton.addEventListener('click', (e) => {
-    audioSourceElement.src="amenBreak.mp3";
+    audioSourceElement.src="/amenBreak.mp3";
     goToMainView();
 })
 
@@ -103,8 +103,8 @@ if (html5Context) {
 
 // Get the shaders from the server
 async function getShaders() : Promise<{ vertexShader: string, fragmentShader: string}> {
-    const vertexShader = await fetch('./shader.vert').then((res) => res.text());
-    const fragmentShader = await fetch('./shader.frag').then((res) => res.text());
+    const vertexShader = await fetch('/shader.vert').then((res) => res.text());
+    const fragmentShader = await fetch('/shader.frag').then((res) => res.text());
     return { vertexShader, fragmentShader };
 }
 
