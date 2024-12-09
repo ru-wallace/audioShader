@@ -3,11 +3,11 @@ import { configDotenv } from 'dotenv';
 configDotenv()
 
 export default defineConfig({
-    shared: {
-        base: process.env.BASE_URL || '/audioshader/',
-        root: process.env.BUILD_ROOT || './www',
-        outDir: 'build',
-    },
+    
+    base: process.env.BASE_URL || '/audioshader/',
+    root: process.env.BUILD_ROOT || './www',
+    outDir: './dist',
+
 
         
     server: {

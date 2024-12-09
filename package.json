@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/index.ts",
     "serve": "vite serve ./www --port 3000",
-    "prod": "npx tsc && NODE_ENV=production vite build ./www --config vite.config.js && vite serve ./www/dist --config vite.config.js"
+    "prod": "npx tsc && NODE_ENV=production vite build --config vite.config.js && vite serve ./www/dist --config vite.config.js"
   },
   "author": "",
   "license": "ISC",
