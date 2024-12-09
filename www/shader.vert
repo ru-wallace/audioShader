@@ -21,7 +21,7 @@ void main() {
 
     vec2 position_xy = a_position.xy;
     
-    float r = position_xy.y+1.0 + 0.2*(1.0-position_xy.x);
+    float r = (position_xy.y+1.0)/2.0 + 0.2*(1.0-((position_xy.x+1.0)/2.0));
     float theta = position_xy.x * (8.0*3.14159) + 3.14159/2.0;
 
 
