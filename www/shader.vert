@@ -28,13 +28,19 @@ void main() {
     position_xy.x = r * cos(theta);
     position_xy.y = r * sin(theta) * u_aspect;
     
-    vec2 p = position_xy + vec2(a_normal * u_thickness/2.0 * a_miter);
-    if (polar == 0.0) {
-    p = a_position.xy + vec2(a_normal * u_thickness/2.0 * a_miter);
-    }
+    vec2 p = a_position.xy + vec2(a_normal * (u_thickness/2.0) * a_miter);
+
+    float z = 0.0;
 
     v_pos = vec2((a_position.x+1.0)/2.0, (a_position.y+1.0)/2.0);
-    vec4 pos = u_projectionMatrix  * u_viewMatrix * u_modelMatrix * vec4(p.x, p.y, 0.5+ 0.8*v_pos.y, 1.0);
+
+    if (polar != 0.0) {
+        p = position_xy + vec2(a_normal * u_thickness/2.0 * a_miter);
+        z = 0.5 + 0.8 * (a_position.y+1.0)/2.0;
+    }
+
+
+    vec4 pos = u_projectionMatrix  * u_viewMatrix * u_modelMatrix * vec4(p.x, p.y, z, 1.0);
 
     
     //gl_Position = vec4(a_position.x, a_position.y, 0,0);
