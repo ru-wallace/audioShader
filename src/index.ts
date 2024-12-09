@@ -10,13 +10,51 @@ const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 
 //const timeDisplay = <HTMLSpanElement> document.getElementById('time');
 const audioElement = <HTMLAudioElement> document.getElementById('audio');
-const audioProcessor = new AudioProcessor(audioElement);
+const audioSourceElement = <HTMLSourceElement> document.getElementById('audio-source')
 
-canvas.addEventListener('click', (e) => {
-    if (e.target === canvas) {
-        audioProcessor.toggle();
-    } 
+
+const beethovenButton = <HTMLDivElement> document.getElementById('beethoven');
+const amenButton = <HTMLDivElement> document.getElementById('amen-break');
+
+const uploadInput = <HTMLInputElement> document.getElementById('upload-input');
+const uploadButton = <HTMLButtonElement> document.getElementById('upload-button');
+
+function goToMainView() {
+    document.getElementById("audio-selector")?.classList.add('hidden');
+    canvas.classList.remove('hidden');
+    audioElement.classList.remove('hidden');
+    resizeCanvasToDisplaySize(canvas);
+    audioElement.load();
+    init();
+}
+
+
+uploadButton.addEventListener('click', (e) =>{
+    if (uploadInput.files) {
+        const file = uploadInput.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            audioSourceElement.src = url;
+            goToMainView();
+        }
+    }
 });
+
+
+
+beethovenButton.addEventListener('click', (e) => {
+    audioSourceElement.src="beethoven5.mp3";
+    goToMainView()
+
+});
+
+amenButton.addEventListener('click', (e) => {
+    audioSourceElement.src="amenBreak.mp3";
+    goToMainView();
+})
+
+
+
 
 const thicknessSlider = <HTMLInputElement> document.getElementById('thickness-slider');
 
@@ -71,6 +109,18 @@ async function getShaders() : Promise<{ vertexShader: string, fragmentShader: st
 }
 
 async function init() {
+
+    var allowPlay = false;
+    const audioProcessor = new AudioProcessor(audioElement);
+
+
+    document.getElementById("canvas-container")!.addEventListener('click', (e) => {
+        if (e.target !== audioElement && allowPlay) {
+            audioProcessor.toggle();
+        }
+    });
+
+    setTimeout(() =>{allowPlay=true}, 500);
     const { vertexShader, fragmentShader } = await getShaders();
     const program = buildProgram(gl, vertexShader, fragmentShader);
     if (!program) {
@@ -405,6 +455,7 @@ async function init() {
         setMouseInteractionState(polarCheckbox.checked)
     });
 
+
     programInfo.uniforms.polar.value = polarCheckbox.checked ? 1 : 0;
     setMouseInteractionState(polarCheckbox.checked);
 
@@ -502,7 +553,3 @@ async function init() {
 
 }
 
-
-
-
-init();

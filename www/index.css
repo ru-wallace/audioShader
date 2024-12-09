@@ -7,6 +7,12 @@ div {
     box-sizing: border-box;
 }
 
+.hidden {
+    display: none !important;
+}
+
+
+
 #content {
     height: 100vh;
     width: 100vw;
@@ -46,17 +52,84 @@ div {
 
 #canvas-overlay {
     position:absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
+    width: 100%;
+    height: 100%;
+    top:0;
+
+}
+
+#audio-selector {
+    display: flex;
+    flex-direction: column;
+    height:90%;
+    bottom: 0;
+    top: 0;
+    width: 100%;
+    min-width: max-content;
+    padding: 20%;
+    background-color: #242424;
+    
+    justify-content: flex-start;
+
+
+}
+
+#audio-selector .title {
+    font-size: 2em;
+    width: 100%;
+    text-align: center;
+    color: #afafaf;
+}
+
+.audio-option {
+    margin-bottom: 10px;
+    width: 100%;
+    min-width: max-content;
+    min-height: 60px;
+    font-size: 1.5em;
+    background-color: #afafaf;
+    color:#272727;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-block: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: all 0.2s ease;
+}
+
+.audio-option:hover {
+    background-color: #6d6d6d;
+}
+
+#upload-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap:10px;
+    
+}
+
+#upload-container button {
+    min-height:max-content;
+    padding: 10px;
+    text-align: center;
+    border-radius: 0;
+    color: #afafaf;
+    background-color: #242424;
+    width: 100%;
+    font-size: 1.5em;
 }
 
 audio {
+    position:absolute;
     width: 100%;
+    bottom:20px;
 }
 
 #controls {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -152,7 +225,22 @@ audio {
         flex-direction: column;
     }
 
+    #audio-selector {
+        padding: 10px;
+    }
 
+    
+    #audio-selector .audio-option {
+
+        font-size: 1em;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap:10px;
+        min-height: max-content;
+        padding-block: 5px;
+    }
 
     #controls {
         flex-direction: column;

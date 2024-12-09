@@ -24,10 +24,25 @@
                 </canvas>
             </div> -->
             <div id="canvas-container">
-                <canvas id="canvas" width="500" height="500">
+                <canvas id="canvas" class="hidden" width="500" height="500">
                 </canvas>
+
+                
                 <div id="canvas-overlay">
-                    <audio src="audio2.mp3" id="audio" controls></audio>
+                    <div id="audio-selector">
+                        <span class="title">Select Audio</span>
+                        <div class="audio-option" id="beethoven"><span>Beethoven's 5th</span></div>
+                        <div class="audio-option" id="amen-break"><span>Amen Break</span></div>
+                        <div class="audio-option" id="upload-container">
+                            <span>Use your own audio file: </span>
+                            
+                            <input type="file" id="upload-input">
+                            <button id="upload-button">Go</button>
+                        </div>
+                    </div>
+                    <audio id="audio" class="hidden" controls>
+                        <source id="audio-source" src=""></source>
+                    </audio>
                 </div>
             </div>
             <div id="controls">
