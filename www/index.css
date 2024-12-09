@@ -70,64 +70,80 @@ audio {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    margin-right: 20px;
 }
 
 .info {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .info .label {
     font-size: 1em;
     margin-right: 10px;
+    flex: 1 0 max-content;
 }
 
 .info .value {
-    font-size: 1.5em;
+    font-size: 1em;
     border: 1px solid black;
-    width: 100px;
+    flex: 0 0 40px;
+    height: 100%;
+    align-content: center;
 }
+
+.control {
+    flex: 1 1 100%;
+}
+
+.control input, .slider input {
+    width: 100%;
+} 
 
 .slider-group {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     margin-top: 20px;
+    width: 100%;
 }
 
 .slider-group .info {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
+    width: unset;
 }
 
-.slider-group .info .value {
+
+
+.info .value {
     font-size: 1em;
     margin-right: 10px;
-    width: unset;
+    width: 40px;
+    text-align: center;
 }
 
 .slider {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
+    width: 100%;
 
 }
 
-.slider-group .control {
-    writing-mode: vertical-lr;
-    direction: rtl;
-    appearance: slider-vertical;
-    width: 20px;
-
+.slider .control {
+    flex: 1 1 100%;
 }
+
+
+
 
 
 
