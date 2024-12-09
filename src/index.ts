@@ -20,8 +20,10 @@ canvas.addEventListener('click', (e) => {
 
 const thicknessSlider = <HTMLInputElement> document.getElementById('thickness-slider');
 
+const timeDomainCheckbox = <HTMLInputElement> document.getElementById('time-domain-checkbox');
 const orthoCheckbox = <HTMLInputElement> document.getElementById('ortho-checkbox');
 const polarCheckbox = <HTMLInputElement> document.getElementById('polar-checkbox');
+const mouseInteractionCheckbox = <HTMLInputElement> document.getElementById('mouse-interaction-checkbox');
 
 const viewXSlider = <HTMLInputElement> document.getElementById('viewX-slider');
 const viewYSlider = <HTMLInputElement> document.getElementById('viewY-slider');
@@ -72,6 +74,9 @@ async function init() {
             miter: gl.getAttribLocation(program, 'a_miter')
         },
         uniforms: {
+            mouseIn: {location: gl.getUniformLocation(program, 'u_mouseIn'), type: 'float', value: 0},
+            mouseCoords: {location: gl.getUniformLocation(program, 'u_mouseCoords'), type: 'vec2', value: Float32Array.from([0, 0])},
+            mouseMagnitude: {location: gl.getUniformLocation(program, 'u_mouseMagnitude'), type: 'float', value: 1},
             thickness: {location: gl.getUniformLocation(program, 'u_thickness'), type: 'float', value: null},
             polar: {location: gl.getUniformLocation(program, 'u_polar'), type: 'float', value: null},
             aspect: {location: gl.getUniformLocation(program, 'u_aspect'), type: 'float', value: null},
@@ -273,6 +278,62 @@ async function init() {
         view();
     });
 
+    function handleInteraction(e:MouseEvent|TouchEvent) {
+        if (!mouseInteractionCheckbox.checked) {
+            return;
+        }
+
+        let eventX, eventY;
+        if (e instanceof MouseEvent) {
+            eventX = e.clientX;
+            eventY = e.clientY;
+        } else if (e instanceof TouchEvent) {
+            eventX = e.touches[0].clientX;
+            eventY = e.touches[0].clientY;
+        }
+
+        if (!eventX || !eventY) {
+            return;
+        }
+
+        const rect = canvas.getBoundingClientRect();
+        const x = 2*(eventX - rect.left)/canvas.width-1;
+        const y = (2*(eventY - rect.top)/canvas.height-1)*-1;
+        const coords = Float32Array.from([x, y]);
+        programInfo.uniforms.mouseCoords.value = coords;
+        programInfo.uniforms.mouseIn.value = 1;
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+        handleInteraction(e);
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+        handleInteraction(e);
+    });
+
+    canvas.addEventListener('mouseleave', (e) => {
+        programInfo.uniforms.mouseIn.value = 0;
+    });
+    canvas.addEventListener('touchend', (e) => {
+
+        programInfo.uniforms.mouseIn.value = 0;
+    });
+
+    
+    canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        programInfo.uniforms.mouseMagnitude.value += e.deltaY/1000;
+        if (programInfo.uniforms.mouseMagnitude.value < 0.1) {
+            programInfo.uniforms.mouseMagnitude.value = 0.1;
+        }
+        if (programInfo.uniforms.mouseMagnitude.value > 10) {
+            programInfo.uniforms.mouseMagnitude.value = 10;
+        }
+    });
+
+    
+
     setPerspective();
     view();
     rotate();
@@ -292,8 +353,10 @@ async function init() {
     polarCheckbox.addEventListener('change', (e) => {
         
         programInfo.uniforms.polar.value = polarCheckbox.checked ? 1 : 0;
+        mouseInteractionCheckbox.disabled = !polarCheckbox.checked;
     });
 
+    mouseInteractionCheckbox.disabled = !polarCheckbox.checked;
 
 
     const startTime = Date.now();
@@ -309,20 +372,24 @@ async function init() {
         //now *= 0.001;
 
         // Get the frequency data from the audio processor and store it in the frequencyData array
-        audioProcessor.getFrequencyData(frequencyData);
-        //audioProcessor.getTimeDomainData(frequencyData);
+        let normCoeff = 1.0/255.0;
+
+        if (timeDomainCheckbox.checked) {
+            audioProcessor.getTimeDomainData(frequencyData);
+            normCoeff = 1.0/128.0;
+        } else {
+            audioProcessor.getFrequencyData(frequencyData);
+        }
 
         // Turn the frequency data into an array of points
-         const path: [number, number][] = Array.from(frequencyData).map((y, x) => 
-             [2*x/frequencyData.length - 1, 1.8*y/255 - 0.9]);
+         const path: [number, number][] = Array.from(frequencyData).map((y, x) =>  {
+            if (timeDomainCheckbox.checked) {
+                return [2*x/frequencyData.length - 1, 2*(y*normCoeff-1) ];
+         } else {
+            return [2*x/frequencyData.length - 1, 1.8*y*normCoeff - 0.9];
+         }
+    });
 
-        //turn into polar coordinates
-        // const path = Array.from(frequencyData).map((y, x) =>
-        // {
-        //     let r = y/255 + 0.2*(1-x/frequencyData.length);
-        //     let theta = 8*Math.PI*x/frequencyData.length + Math.PI/2;
-        //     return [r*Math.cos(theta), r*Math.sin(theta) * aspect];
-        // });
 
 
 

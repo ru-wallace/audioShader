@@ -90,9 +90,7 @@ function drawScene(gl:WebGL2RenderingContext, programInfo:programInfo_t, buffers
   function setUniforms(gl:WebGL2RenderingContext, programInfo:programInfo_t) {
     
     for (const key in programInfo.uniforms) {
-        if (programInfo.uniforms[key].location === null) {
-            throw new Error(`Could not get uniform location for ${key}`);
-        }
+        
 
         const value = programInfo.uniforms[key].value;
         const type = programInfo.uniforms[key].type;
