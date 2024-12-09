@@ -9,6 +9,7 @@ uniform mat4 u_projectionMatrix;
 uniform float u_mouseIn;
 uniform vec2 u_mouseCoords;
 uniform float u_mouseMagnitude;
+uniform float u_mouseArea;
 
 
 in vec4 a_position;
@@ -56,7 +57,7 @@ void main() {
         vec2 mouseCoords = mouseCoords4.xy;
         float dist = distance(pos.xy, mouseCoords);
 
-        float distFunc = (0.7 - dist);
+        float distFunc = (u_mouseArea - dist);
         if (distFunc < 0.0) {
             distFunc = 0.0;
         } else {

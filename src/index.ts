@@ -24,6 +24,18 @@ const timeDomainCheckbox = <HTMLInputElement> document.getElementById('time-doma
 const orthoCheckbox = <HTMLInputElement> document.getElementById('ortho-checkbox');
 const polarCheckbox = <HTMLInputElement> document.getElementById('polar-checkbox');
 const mouseInteractionCheckbox = <HTMLInputElement> document.getElementById('mouse-interaction-checkbox');
+const mouseMagSlider = <HTMLInputElement> document.getElementById('mouse-mag-slider');
+const mouseAreaSlider = <HTMLInputElement> document.getElementById('mouse-area-slider');
+
+
+function setMouseInteractionState(value:boolean) {
+    let disabled = !value
+    mouseInteractionCheckbox.checked = disabled ? mouseInteractionCheckbox.checked : false;
+    mouseInteractionCheckbox.disabled = disabled;
+    mouseMagSlider.disabled = disabled;
+    mouseAreaSlider.disabled = disabled;
+}
+
 
 const viewXSlider = <HTMLInputElement> document.getElementById('viewX-slider');
 const viewYSlider = <HTMLInputElement> document.getElementById('viewY-slider');
@@ -77,6 +89,7 @@ async function init() {
             mouseIn: {location: gl.getUniformLocation(program, 'u_mouseIn'), type: 'float', value: 0},
             mouseCoords: {location: gl.getUniformLocation(program, 'u_mouseCoords'), type: 'vec2', value: Float32Array.from([0, 0])},
             mouseMagnitude: {location: gl.getUniformLocation(program, 'u_mouseMagnitude'), type: 'float', value: 1},
+            mouseArea: {location: gl.getUniformLocation(program, 'u_mouseArea'), type: 'float', value: 0.7},
             thickness: {location: gl.getUniformLocation(program, 'u_thickness'), type: 'float', value: null},
             polar: {location: gl.getUniformLocation(program, 'u_polar'), type: 'float', value: null},
             aspect: {location: gl.getUniformLocation(program, 'u_aspect'), type: 'float', value: null},
@@ -323,15 +336,51 @@ async function init() {
     
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
-        programInfo.uniforms.mouseMagnitude.value += e.deltaY/1000;
-        if (programInfo.uniforms.mouseMagnitude.value < 0.1) {
-            programInfo.uniforms.mouseMagnitude.value = 0.1;
+
+        if (e.shiftKey) {
+            programInfo.uniforms.mouseArea.value += e.deltaY/-1000;
+            if (programInfo.uniforms.mouseArea.value < 0.1) {
+                programInfo.uniforms.mouseArea.value = 0.1;
+            }
+            if (programInfo.uniforms.mouseArea.value > 2) {
+                programInfo.uniforms.mouseArea.value = 2;
+            }
+            mouseAreaSlider.value = programInfo.uniforms.mouseArea.value.toString();
+            document.getElementById('mouse-area-value')!.textContent = programInfo.uniforms.mouseArea.value.toFixed(2).toString();
+            return;
+        }
+
+
+
+        programInfo.uniforms.mouseMagnitude.value += e.deltaY/-3000;
+        if (programInfo.uniforms.mouseMagnitude.value < -5) {
+            programInfo.uniforms.mouseMagnitude.value = -5;
         }
         if (programInfo.uniforms.mouseMagnitude.value > 10) {
             programInfo.uniforms.mouseMagnitude.value = 10;
         }
+        mouseMagSlider.value = programInfo.uniforms.mouseMagnitude.value.toString();
+        document.getElementById('mouse-mag-value')!.textContent = programInfo.uniforms.mouseMagnitude.value.toFixed(1).toString();
     });
 
+    mouseMagSlider.addEventListener('input', (e) => {
+        programInfo.uniforms.mouseMagnitude.value = mouseMagSlider.valueAsNumber;
+        document.getElementById('mouse-mag-value')!.textContent = programInfo.uniforms.mouseMagnitude.value.toFixed(1).toString();
+
+    });
+
+    mouseAreaSlider.addEventListener('input', (e) => {
+        programInfo.uniforms.mouseArea.value = mouseAreaSlider.valueAsNumber;
+        document.getElementById('mouse-area-value')!.textContent = programInfo.uniforms.mouseArea.value.toFixed(2).toString();
+    });
+
+    mouseMagSlider.dispatchEvent(new Event('input'));
+    mouseAreaSlider.dispatchEvent(new Event('input'));
+
+    mouseInteractionCheckbox.addEventListener('change', (e) => {
+        mouseAreaSlider.disabled = !mouseInteractionCheckbox.checked;
+        mouseMagSlider.disabled = !mouseInteractionCheckbox.checked;
+    });
     
 
     setPerspective();
@@ -353,10 +402,12 @@ async function init() {
     polarCheckbox.addEventListener('change', (e) => {
         
         programInfo.uniforms.polar.value = polarCheckbox.checked ? 1 : 0;
-        mouseInteractionCheckbox.disabled = !polarCheckbox.checked;
+        setMouseInteractionState(polarCheckbox.checked)
     });
 
-    mouseInteractionCheckbox.disabled = !polarCheckbox.checked;
+    programInfo.uniforms.polar.value = polarCheckbox.checked ? 1 : 0;
+    setMouseInteractionState(polarCheckbox.checked);
+
 
 
     const startTime = Date.now();
